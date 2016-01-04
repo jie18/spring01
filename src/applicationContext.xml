@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- 
+		配置bean 
+		class：bean的全类名，通过反射的方式在IOC容器中创建Bean,所以要求Bean中必须有无参数的构造器
+		id：标识容器中bean.id唯一
+	-->
+	<bean id="helloWorld" class="com.jie18.spring.HelloWorld">
+		<!-- 通过属性方法来配置bean的属性 -->
+		<!-- 通过setter方法进行注入，name2即HelloWorld.java里setName2方法 -->
+		<property name="name2" value="jie18"></property>
+	</bean>
+	
+	<!-- 通过构造方法来配置bean的属性；index属性可不写，默认为类中参数顺序 -->
+	<bean id="car" class="com.jie18.spring.Car">
+		<constructor-arg value="Audi" index="0"></constructor-arg>
+		<constructor-arg value="Shanghai" index="1"></constructor-arg>
+		<constructor-arg value="300000" type="double"></constructor-arg>
+	</bean>
+	
+	<!-- 使用构造器注入属性可以指定参数的位置和类型，以区分重载的构造器 -->
+	<bean id="car2" class="com.jie18.spring.Car">
+		<constructor-arg value="Baoma" type="java.lang.String"></constructor-arg>
+		<!-- 如果字面值包含特殊字符可以使用<![CDATA[]]> 包裹起来 -->
+		<!-- 属性值可以使用value属性或是value子节点进行配置 -->
+		<constructor-arg type="java.lang.String">
+			<value><![CDATA[<ShangHai^>]]></value>
+		</constructor-arg>
+		<constructor-arg type="int">
+			<value>260</value>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="person" class="com.jie18.spring.Person">
+		<property name="name" value="Tom"></property>
+		<property name="age" value="20"></property>
+		<!-- 可以使用property中的 ref 属性或ref子节点建立bean之间的引用关系 -->
+		<!-- 
+		<property name="car" ref="car2"></property>
+		 -->
+		<!-- 
+		<property name="car">
+			<ref bean="car2">
+		</property>
+		-->
+		<!-- 使用内部bean建立关系,不能被外部引用只能在内部使用，故不需要设定id值 -->
+		<property name="car">
+			<bean class="com.jie18.spring.Car">
+				<constructor-arg value="Ford"></constructor-arg>
+				<constructor-arg value="Changan"></constructor-arg>
+				<constructor-arg value="200000" type="double"></constructor-arg>
+			</bean>
+		</property> 
+		<!-- 为级联属性赋值 -->
+	    <property name="car.maxSpeed" value="270"></property>
+	</bean>
+	
+	<bean id="person2" class="com.jie18.spring.Person">
+		<constructor-arg value="Jerry"></constructor-arg>
+		<constructor-arg value="19"></constructor-arg>
+   		<!-- 测试null值 -->
+		<!-- 即将car的值赋值为null
+		<constructor-arg><null/></constructor-arg>
+	     -->
+	    <constructor-arg ref="car"></constructor-arg>
+	    <!-- 为级联属性赋值 ，不常用.注意：属性需要先初始化后才可以为级联属性赋值，否则会有异常，和Struts2不同。-->
+	    <property name="car.maxSpeed" value="250"></property>
+
+	</bean>
+
+</beans>
